@@ -1,10 +1,11 @@
 import ProductCard from '@/components/ProductCard';
 
+export const dynamic = 'force-dynamic';
 export default async function Home() {
   let products = [];
   try {
-    // Fetch from Express API (running on port 3001)
-    const res = await fetch('http://localhost:3001/api/products', { cache: 'no-store' });
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const res = await fetch(`${apiUrl}/api/products`, { cache: 'no-store' });
     if (res.ok) {
       products = await res.json();
     } else {
