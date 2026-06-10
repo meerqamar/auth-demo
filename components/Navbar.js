@@ -17,24 +17,32 @@ export default async function NavBar() {
           <CartMenu />
 
           {session ? (
-            <div className="flex items-center gap-4 bg-slate-50 pl-2 pr-4 py-2 rounded-full border border-slate-200">
-              <img
-                src={session.user.image}
-                width={32}
-                height={32}
-                className="rounded-full shadow-sm ring-2 ring-white"
-                alt="Profile"
-              />
-              <span className="font-medium text-slate-700 text-sm">{session.user.name}</span>
+            <div className="flex items-center gap-4">
+              <a
+                href="/orders"
+                className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+              >
+                📦 Orders
+              </a>
+              <div className="flex items-center gap-4 bg-slate-50 pl-2 pr-4 py-2 rounded-full border border-slate-200">
+                <img
+                  src={session.user.image}
+                  width={32}
+                  height={32}
+                  className="rounded-full shadow-sm ring-2 ring-white"
+                  alt="Profile"
+                />
+                <span className="font-medium text-slate-700 text-sm">{session.user.name}</span>
 
-              <form action={async () => {
-                'use server'
-                await signOut()
-              }}>
-                <button type="submit" className="text-sm font-semibold text-red-500 hover:text-red-700 ml-2 transition-colors">
-                  Sign Out
-                </button>
-              </form>
+                <form action={async () => {
+                  'use server'
+                  await signOut()
+                }}>
+                  <button type="submit" className="text-sm font-semibold text-red-500 hover:text-red-700 ml-2 transition-colors">
+                    Sign Out
+                  </button>
+                </form>
+              </div>
             </div>
           ) : (
             <div className="flex gap-3">

@@ -16,12 +16,23 @@ export default function CartMenu() {
     if (cart.length === 0) return;
     setLoading(true);
     try {
-      // In a real app we'd pass the actual userId from the session if needed
-      // but for this demo the webhook uses session metadata logic
-      const res = await fetch('http://localhost:3001/api/checkout', {
+      // Get authenticated user's ID from next-auth session
+      let userId = 1;
+      try {
+        const sessionRes = await fetch('/api/auth/session');
+        const sessionData = await sessionRes.json();
+        if (sessionData?.user?.id) {
+          userId = sessionData.user.id;
+        }
+      } catch (e) {
+        console.warn('Could not fetch session, using default userId');
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${apiUrl}/api/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart, userId: 1 })
+        body: JSON.stringify({ items: cart, userId })
       });
       
       const data = await res.json();
