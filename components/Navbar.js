@@ -1,7 +1,8 @@
 // components/NavBar.js
 
-import { signIn, signOut, auth } from '@/auth'
+import { auth } from '@/auth'
 import CartMenu from './CartMenu'
+import { GoogleSignInButton, GitHubSignInButton, SignOutButton } from './AuthButtons'
 
 export default async function NavBar() {
   const session = await auth()
@@ -33,38 +34,13 @@ export default async function NavBar() {
                   alt="Profile"
                 />
                 <span className="font-medium text-slate-700 text-sm">{session.user.name}</span>
-
-                <form action={async () => {
-                  'use server'
-                  await signOut()
-                }}>
-                  <button type="submit" className="text-sm font-semibold text-red-500 hover:text-red-700 ml-2 transition-colors">
-                    Sign Out
-                  </button>
-                </form>
+                <SignOutButton />
               </div>
             </div>
           ) : (
             <div className="flex gap-3">
-              {/* Google Button */}
-              <form action={async () => {
-                'use server'
-                await signIn('google')
-              }}>
-                <button type="submit" className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-2 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                  <span className="text-lg">G</span> Google
-                </button>
-              </form>
-
-              {/* GitHub Button */}
-              <form action={async () => {
-                'use server'
-                await signIn('github')
-              }}>
-                <button type="submit" className="bg-[#24292e] hover:bg-black text-white font-semibold py-2 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                  <span className="text-lg">🐙</span> GitHub
-                </button>
-              </form>
+              <GoogleSignInButton />
+              <GitHubSignInButton />
             </div>
           )}
         </div>
