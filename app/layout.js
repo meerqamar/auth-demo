@@ -19,6 +19,9 @@ export const metadata = {
 
 import { CartProvider } from '@/components/CartContext';
 
+// Auth in NavBar needs the database — skip static prerender at build time
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({ children }) {
   return (
     <html
