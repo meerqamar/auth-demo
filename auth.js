@@ -1,12 +1,14 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
-import GitHub from "next-auth/providers/github"
+import GitHub from 'next-auth/providers/github';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './lib/prisma';
+
 const adapter = PrismaAdapter(prisma);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
+  session: { strategy: 'jwt' },
   adapter: {
     ...adapter,
     createUser: async (data) => {
@@ -35,41 +37,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       data.userId = Number(data.userId);
       return await adapter.linkAccount(data);
     },
-    createSession: async (data) => {
-      data.userId = Number(data.userId);
-      const session = await adapter.createSession(data);
-      return { ...session, userId: session.userId.toString() };
-    },
-    getSessionAndUser: async (sessionToken) => {
-      const result = await adapter.getSessionAndUser(sessionToken);
-      if (!result) return null;
-      return {
-        user: { ...result.user, id: result.user.id.toString() },
-        session: { ...result.session, userId: result.session.userId.toString() }
-      };
-    },
-    updateSession: async (data) => {
-      if (data.userId) data.userId = Number(data.userId);
-      const session = await adapter.updateSession(data);
-      return { ...session, userId: session.userId.toString() };
-    }
   },
- providers: [
-  Google({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    allowDangerousEmailAccountLinking: true,
-  }),
-  GitHub({
-    clientId: process.env.GITHUB_ID,
-    clientSecret: process.env.GITHUB_SECRET,
-    allowDangerousEmailAccountLinking: true,
-  }),
- ],
- callbacks: {
- session({ session, user }) {
- session.user.id = user.id; // Add user ID to session
- return session;
- },
- },
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) token.id = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) session.user.id = token.id;
+      return session;
+    },
+  },
 });

@@ -18,6 +18,7 @@ export const metadata = {
 };
 
 import { CartProvider } from '@/components/CartContext';
+import Providers from '@/components/Providers';
 
 // Auth in NavBar needs the database — skip static prerender at build time
 export const dynamic = 'force-dynamic';
@@ -30,12 +31,14 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#f8fafc] text-slate-900">
-        <CartProvider>
-          <NavBar />
-          <main className="flex-1">
-            {children}
-          </main>
-        </CartProvider>
+        <Providers>
+          <CartProvider>
+            <NavBar />
+            <main className="flex-1">
+              {children}
+            </main>
+          </CartProvider>
+        </Providers>
       </body>
     </html>
   );
